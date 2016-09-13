@@ -1,12 +1,14 @@
 #include "LocalServer.h"
 #include "Utilities.h"
+#include "Connections.h"
 #include <QTcpServer>
 #include <QTcpSocket>
+#include <QDebug>
 
 LocalServer::LocalServer(QObject* parent)
 	: QObject(parent)
 	  , server_(new QTcpServer(this))
-	  , socket_(0)
+	  , connects_(new Connections(this))
 {
 	initialize();	
 }
@@ -30,17 +32,20 @@ void LocalServer::initialize()
 
 void LocalServer::onNewConnection()
 {
-	socket_ = server_->nextPendingConnection();
-	Q_ASSERT(socket_);
-	connect(socket_, SIGNAL(disconnect()), socket_, SLOT(deleteLater()));
-	connect(socket_, SIGNAL(readyRead()), this, SLOT(onSocketDataReceived()));
+	//qDebug() << "onNewConnection called";
+	QTcpSocket* socket = server_->nextPendingConnection();
+	connects_->addSocket(socket);
 }
 
-void LocalServer::onSocketDataReceived()
-{
-	while(socket_->bytesAvailable())
-	{
-		QByteArray data = socket_->readAll();
-
-	}
-}
+//void LocalServer::onSocketDataReceived()
+//{
+//	qDebug() << "onSocketDataReceived called";
+//	while(socket_->bytesAvailable())
+//	{
+//		QByteArray data = socket_->readAll();
+//		outputData(data);
+//		output(data);
+//	}
+//	//QByteArray data = {0x05, 0x00};
+//	//socket_->write(data);
+//}

@@ -8,9 +8,14 @@ INCLUDEPATH += .
 QT += network
 QT -= gui
 
+QMAKE_CXXFLAGS += "-std=c++11"
+
 # Input
 SOURCES += appMain.cpp \
 	LocalServer.cpp \
-	Utilities.cpp
+	Utilities.cpp \
+	Connections.cpp
+
 HEADERS += LocalServer.h \
-	Utilities.h
+	Utilities.h \
+	Connections.h

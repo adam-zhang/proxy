@@ -5,6 +5,7 @@
 
 class QTcpServer;
 class QTcpSocket;
+class Connections;
 
 class LocalServer : public QObject
 {
@@ -16,11 +17,11 @@ public:
 	bool listen(int port);
 private:
 	QTcpServer* server_;
-	QTcpSocket* socket_;
+	Connections* connects_;
 private:
 	void initialize();
 private slots:
 	void onNewConnection();
-	void onSocketDataReceived();
+	//void onSocketDataReceived();
 };
 #endif//__LOCALSERVER__H

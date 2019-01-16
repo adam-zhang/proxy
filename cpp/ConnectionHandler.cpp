@@ -1,4 +1,5 @@
 #include "ConnectionHandler.h"
+#include "Debugger.h"
 #include "Socket.h"
 #include <string>
 #include <algorithm>
@@ -8,21 +9,21 @@
 
 using namespace std;
 
-ConnectionHandler::ConnectionHandler(shared_ptr<Socket>& local)
+ConnectionHandler::ConnectionHandler(const shared_ptr<Socket>& local)
 	:local_(local)
 {}
 
 static string readHeader(const shared_ptr<Socket>& socket)
 {
-	vector<char> buffer(512);
 	string ret;
+	vector<char> buffer(512);
 	size_t count = 0;
 	while((count = socket->Receive(buffer)) > 0)
 	{
-		copy(buffer.begin(), 
-				buffer.begin() + count,
-			       	back_inserter(ret));
+		Debugger::write("count", count);
+		copy(buffer.begin(), buffer.begin() + count, back_inserter(ret));
 	}
+	return ret;
 }
 
 
@@ -64,10 +65,21 @@ static string getHost(const string& header)
 
 bool ConnectionHandler::run()
 {
-	string header = readHeader(local_);
-	string host = getHost(header);
-	if (!regex_match(host, regex("[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(/.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+/.?")))
-		return false;
-	remote_ = make_shared<Socket>(host, 80);
-	sendBack(remote_, local_);
+
+	vector<char> buffer(512);
+	size_t count = 0;
+	while((count = local_->Receive(buffer)) > 0)
+	{
+		Debugger::write("count", count);
+		Debugger::write("content", &buffer[0]);
+	}
+	Debugger::write("after read");
+	//string header = readHeader(local_);
+	//Debugger::write("header", header);
+	//string host = getHost(header);
+	//Debugger::write("host", host);
+	//if (!regex_match(host, regex("[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(/.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+/.?")))
+	//	return false;
+	//remote_ = Socket::fromHostName(host);
+	//sendBack(remote_, local_);
 }

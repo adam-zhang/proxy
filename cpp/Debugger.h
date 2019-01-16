@@ -10,7 +10,7 @@ class Debugger
 		static void write(const std::string&);
 		
 		template<typename T>
-		static void write(const std::string& notice, T& value)
+		static void write(const std::string& notice, const T& value)
 		{
 			std::stringstream ss;
 			ss << notice <<  ":" << value;

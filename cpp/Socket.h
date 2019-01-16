@@ -13,11 +13,13 @@ class Socket
 		Socket(const std::string&, short port);
 		Socket(int s, const sockaddr_in& address);
 		~Socket();
+	public:
+		static std::shared_ptr<Socket> fromHostName(const std::string&);
 	private:
 		int socket_;
 		struct sockaddr_in address_;
 	public:
-		int fileDescriptor()
+		const int fileDescriptor()
 		{ return socket_; }
 		const sockaddr_in& address()const
 		{ return address_; }
@@ -26,8 +28,8 @@ class Socket
 		bool Listen();
 		bool Connect();
 		std::shared_ptr<Socket> Accept();
-		size_t Receive(std::vector<char>&);
-		size_t Send(const std::vector<char>&);
-		size_t Send(const std::vector<char>&, size_t size);
+		ssize_t Receive(std::vector<char>&);
+		ssize_t Send(const std::vector<char>&);
+		ssize_t Send(const std::vector<char>&, size_t size);
 };
 #endif//__SOCKET__H

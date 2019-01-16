@@ -7,7 +7,7 @@ class Socket;
 class ConnectionHandler
 {
 	public:
-		explicit ConnectionHandler(std::shared_ptr<Socket>&);
+		explicit ConnectionHandler(const std::shared_ptr<Socket>&);
 	private:
 		std::shared_ptr<Socket> local_;
 		std::shared_ptr<Socket> remote_;

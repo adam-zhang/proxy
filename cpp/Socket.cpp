@@ -5,6 +5,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <iostream>
+#include <netdb.h>
 
 using namespace std;
 
@@ -92,26 +93,34 @@ std::shared_ptr<Socket> Socket::Accept()
 {
 	sockaddr_in clientAddress = {0};
 	socklen_t size = 0;
-	int ret = accept(socket_, (sockaddr*)&clientAddress, &size);
-	if (ret < 0)
+	int client = accept(socket_, (sockaddr*)&clientAddress, &size);
+	if (client < 0)
 		return NULL;
-	auto p = make_shared<Socket>(ret, clientAddress);
-	fcntl(ret, F_SETFD, fcntl(ret, F_GETFD, 0 )|O_NONBLOCK);
-	return p;
+	int ret = fcntl(client, F_SETFD, fcntl(client, F_GETFD, 0)|O_NONBLOCK);
+	assert(ret > -1);
+	//assert(fcntl(client, F_GETFD, 0) & O_NONBLOCK);
+	return make_shared<Socket>(client, clientAddress);
 }
 
-size_t Socket::Receive(vector<char>& data)
+ssize_t Socket::Receive(vector<char>& data)
 {
 	return read(socket_, &data[0], data.size());
 }
 
-size_t Socket::Send(const vector<char>& data)
+ssize_t Socket::Send(const vector<char>& data)
 {
 	return write(socket_, &data[0], data.size());
 }
 
-size_t Socket::Send(const vector<char>& buffer, size_t size)
+ssize_t Socket::Send(const vector<char>& buffer, size_t size)
 {
 	return write(socket_, &buffer[0], size);
 }
 
+shared_ptr<Socket> Socket::fromHostName(const string& hostName)
+{
+	auto hosts = gethostbyname(hostName.c_str());
+	if (!hosts)
+		return NULL;
+	return make_shared<Socket>(hosts->h_addr_list[0], 80);
+}

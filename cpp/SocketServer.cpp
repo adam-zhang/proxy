@@ -6,6 +6,7 @@
 #include <iterator>
 #include <iostream>
 #include "Debugger.h"
+#include "ConnectionHandler.h"
 
 using namespace std;
 
@@ -25,10 +26,16 @@ void SocketServer::run()
 
 void SocketServer::threadProc(std::shared_ptr<Socket>& s)
 {
-	vector<char> buffer(512);
-	auto count = s->Receive(buffer);	
-	cout << count << " bytes received.\n";
-	copy(buffer.begin(), buffer.begin() + count, ostream_iterator<char>(cout));
-	cout << "\n";
+	//vector<char> buffer(512);
+	//size_t count = 0;
+	//while((count = s->Receive(buffer)) > 0)
+	//	cout << &buffer[0];
+	ConnectionHandler handler(s);
+	handler.run();
+	//vector<char> buffer(512);
+	//auto count = s->Receive(buffer);	
+	//cout << count << " bytes received.\n";
+	//copy(buffer.begin(), buffer.begin() + count, ostream_iterator<char>(cout));
+	//cout << "\n";
 }
 

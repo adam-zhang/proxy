@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 2.8)
+project(proxy)
+set(sources server.cpp)
+add_executable(server ${sources})
+set(client_sources client.cpp)
+add_executable(clinet ${client_sources})
